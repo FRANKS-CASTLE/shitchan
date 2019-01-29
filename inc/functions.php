@@ -989,7 +989,7 @@ function fetchBoardTags( $uris ) {
 			$tag = $tagRow['tag'];
 			$tag = trim($tag);
 			$tag = strtolower($tag);
-			$tag = str_replace(array('_', ' '), '-', $tag);
+			$tag = str_replace(['_', ' '], '-', $tag);
 
 			if (!isset($boardTags[ $tagRow['uri'] ])) {
 				$boardTags[ $tagRow['uri'] ] = array();
@@ -2007,7 +2007,7 @@ function checkDNSBL($use_ip = false) {
 	if (in_array($ip, $config['dnsbl_exceptions']))
 		return;
 
-        if (checkTorlist($ip)array("count") > 0){
+        if (checkTorlist($ip)["count"] > 0){
                 return true;
         } else {
                 return false;
