@@ -2007,7 +2007,7 @@ function checkDNSBL($use_ip = false) {
 	if (in_array($ip, $config['dnsbl_exceptions']))
 		return;
 
-        if (checkTorlist($ip)["count"] > 0){
+        if (checkTorlist($ip)array("count") > 0){
                 return true;
         } else {
                 return false;
