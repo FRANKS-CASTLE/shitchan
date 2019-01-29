@@ -4,7 +4,7 @@
  *  Copyright (c) 2010-2014 Tinyboard Development Group
  */
 
-ini_set('display_errors', false); 
+ini_set('display_errors', false);
 
 if (realpath($_SERVER['SCRIPT_FILENAME']) == str_replace('\\', '/', __FILE__)) {
 	// You cannot request this file directly.
@@ -57,11 +57,11 @@ function getIdentityRange(){
 }
 
 function init_locale($locale, $error='error') {
-	if ($locale === 'en') 
+	if ($locale === 'en')
 		$locale = 'en_US.utf8';
 
 	if (extension_loaded('gettext')) {
-		setlocale(LC_ALL, $locale); 
+		setlocale(LC_ALL, $locale);
 		bindtextdomain('tinyboard', './inc/locale');
 		bind_textdomain_codeset('tinyboard', 'UTF-8');
 		textdomain('tinyboard');
@@ -90,7 +90,7 @@ function loadConfig() {
 	}
 
 
-	if (isset($config['cache_config']) && 
+	if (isset($config['cache_config']) &&
 	    $config['cache_config'] &&
             $config = Cache::get('config_' . $boardsuffix ) ) {
 		$events = Cache::get('events_' . $boardsuffix );
@@ -110,7 +110,7 @@ function loadConfig() {
 		$config = array();
 	// We will indent that later.
 
-	reset_events();	
+	reset_events();
 
 	$arrays = array(
 		'db',
@@ -292,7 +292,7 @@ function loadConfig() {
 		$identity = getIdentity();
 		$__ip = $identity;
 	}
-	
+
 	// ::ffff:0.0.0.0
 	if (preg_match('/^\:\:(ffff\:)?(\d+\.\d+\.\d+\.\d+)$/', $__ip, $m))
 		$_SERVER['REMOTE_ADDR'] = $m[2];
@@ -344,7 +344,7 @@ function basic_error_function_because_the_other_isnt_loaded_yet($message, $prior
 		'<p class="c">This alternative error page is being displayed because the other couldn\'t be found or hasn\'t loaded yet.</p></body></html>');
 }
 
-function fatal_error_handler() { 
+function fatal_error_handler() {
 	if ($error = error_get_last()) {
 		if ($error['type'] == E_ERROR) {
 			if (function_exists('error')) {
@@ -368,7 +368,7 @@ function _syslog($priority, $message) {
 function verbose_error_handler($errno, $errstr, $errfile, $errline) {
 	if (error_reporting() == 0)
 		return false; // Looks like this warning was suppressed by the @ operator.
-	
+
 	error(utf8tohtml($errstr), true, array(
 		'file' => $errfile . ':' . $errline,
 		'errno' => $errno,
@@ -386,7 +386,7 @@ function define_groups() {
 			define($group_name, $group_value, true);
 		}
 	}
-	
+
 	ksort($config['mod']['groups']);
 }
 
@@ -424,7 +424,7 @@ function rebuildThemes($action, $boardname = false) {
 		$config = $_config;
 		$board = $_board;
 
-		// Reload the locale	
+		// Reload the locale
 	        if ($config['locale'] != $current_locale) {
 	                $current_locale = $config['locale'];
 	                init_locale($config['locale'], $error);
@@ -438,7 +438,7 @@ function rebuildThemes($action, $boardname = false) {
 	$config = $_config;
 	$board = $_board;
 
-	// Reload the locale	
+	// Reload the locale
 	if ($config['locale'] != $current_locale) {
 	        $current_locale = $config['locale'];
 	        init_locale($config['locale'], $error);
@@ -586,7 +586,7 @@ function cloudflare_purge($uri) {
 	foreach($schema_urls_purge as $schema_url_purge){
 		$cmd = "curl -X DELETE \"https://api.cloudflare.com/client/v4/zones/".$config['cloudflare']['zone']."/purge_cache\" -H \"X-Auth-Email: ".$config['cloudflare']['email']."\" -H \"X-Auth-Key: ".$config['cloudflare']['token']."\" -H \"Content-Type: application/json\" --data '{\"files\":[\"".$schema_url_purge."/".$uri."\"]}'";
 		$r = shell_exec_error($cmd);
-	}	
+	}
 }
 
 function purge($uri, $cloudflare = false) {
@@ -599,7 +599,7 @@ function purge($uri, $cloudflare = false) {
 	if (!isset($config['purge'])) return;
 
 	// Fix for Unicode
-	$uri = rawurlencode($uri); 
+	$uri = rawurlencode($uri);
 
 	$noescape = "/!~*()+:";
 	$noescape = preg_split('//', $noescape);
@@ -641,27 +641,27 @@ function file_write($path, $data, $simple = false, $skip_purge = false) {
 			error('Invalid remote server: ' . $m[1]);
 		}
 	}
-	
+
 	if (!function_exists("dio_truncate")) {
 		if (!$fp = fopen($path, $simple ? 'w' : 'c'))
 			error('Unable to open file for writing: ' . $path);
-		
+
 		// File locking
 		if (!$simple && !flock($fp, LOCK_EX))
 			error('Unable to lock file: ' . $path);
-		
+
 		// Truncate file
 		if (!$simple && !ftruncate($fp, 0))
 			error('Unable to truncate file: ' . $path);
-		
+
 		// Write data
 		if (($bytes = fwrite($fp, $data)) === false)
 			error('Unable to write to file: ' . $path);
-		
+
 		// Unlock
 		if (!$simple)
 			flock($fp, LOCK_UN);
-		
+
 		// Close
 		if (!fclose($fp))
 			error('Unable to close file: ' . $path);
@@ -669,27 +669,27 @@ function file_write($path, $data, $simple = false, $skip_purge = false) {
 	else {
 		if (!$fp = dio_open($path, O_WRONLY | O_CREAT, 0644))
 			error('Unable to open file for writing: ' . $path);
-		
+
 		// File locking
 		if (dio_fcntl($fp, F_SETLKW, array('type' => F_WRLCK)) === -1) {
 			error('Unable to lock file: ' . $path);
 		}
-		
+
 		// Truncate file
 		if (!dio_truncate($fp, 0))
 			error('Unable to truncate file: ' . $path);
-		
+
 		// Write data
 		if (($bytes = dio_write($fp, $data)) === false)
 			error('Unable to write to file: ' . $path);
-		
+
 		// Unlock
 		dio_fcntl($fp, F_SETLK, array('type' => F_UNLCK));
-		
+
 		// Close
 		dio_close($fp);
 	}
-	
+
 	/**
 	 * Create gzipped file.
 	 *
@@ -789,7 +789,7 @@ function hasPermission($action = null, $board = null, $_mod = null) {
 
 function listBoards($just_uri = false, $indexed_only = false) {
 	global $config;
-	
+
 	$just_uri ? $cache_name = 'all_boards_uri' : $cache_name = 'all_boards';
 	$indexed_only ? $cache_name .= 'indexed' : false;
 
@@ -802,7 +802,7 @@ function listBoards($just_uri = false, $indexed_only = false) {
         if($config['cache']['enabled'] && $indexed_only && ($boards = cache::get("all_boards_indexed"))){
                 return $boards;
         }
-	
+
 	if ($config['cache']['enabled'] && ($boards = cache::get($cache_name)))
 		return $boards;
 
@@ -819,7 +819,7 @@ function listBoards($just_uri = false, $indexed_only = false) {
 			FROM ``boards``" .
 			( $indexed_only ? " WHERE `indexed` = 1 " : "" ) .
 			"ORDER BY ``boards``.`uri`") or error(db_error());
-		
+
 		$boards = $query->fetchAll(PDO::FETCH_ASSOC);
 	}
 	else {
@@ -850,11 +850,11 @@ function loadBoardConfig( $uri ) {
 		"locale" => "en_US",
 	);
 	$configPath = "./{$uri}/config.php";
-	
+
 	if (file_exists( $configPath ) && is_readable( $configPath )) {
 		include( $configPath );
 	}
-	
+
 	// **DO NOT** use $config outside of this local scope.
 	// It's used by our global config array.
 	return $config;
@@ -862,26 +862,26 @@ function loadBoardConfig( $uri ) {
 
 function fetchBoardActivity( array $uris = array(), $forTime = false, $detailed = false ) {
 	global $config;
-	
+
 	// Set our search time for now if we didn't pass one.
 	if (!is_integer($forTime)) {
 		$forTime = time();
 	}
-	
+
 	// Get the last hour for this timestamp.
 	$nowHour = ( (int)( time() / 3600 ) * 3600 );
 	// Get the hour before. This is what we actually use for pulling data.
 	$forHour = ( (int)( $forTime / 3600 ) * 3600 ) - 3600;
 	// Get the hour from yesterday to calculate posts per day.
 	$yesterHour = $forHour - ( 3600 * 23 );
-	
+
 	$boardActivity = array(
 		'active'  => array(),
 		'today'   => array(),
 		'average' => array(),
 		'last'    => array(),
 	);
-	
+
 	// Query for stats for these boards.
 	if (count($uris)) {
 		$uriSearch = "`stat_uri` IN (\"" . implode( (array) $uris, "\",\"" ) . "\") AND ";
@@ -889,29 +889,29 @@ function fetchBoardActivity( array $uris = array(), $forTime = false, $detailed 
 	else {
 		$uriSearch = "";
 	}
-	
+
 	if ($detailed === true) {
 		$bsQuery = prepare("SELECT `stat_uri`, `stat_hour`, `post_count`, `author_ip_array` FROM ``board_stats`` WHERE {$uriSearch} ( `stat_hour` <= :hour AND `stat_hour` >= :hoursago )");
 		$bsQuery->bindValue(':hour', $forHour, PDO::PARAM_INT);
 		$bsQuery->bindValue(':hoursago', $forHour - ( 3600 * 72 ), PDO::PARAM_INT);
 		$bsQuery->execute() or error(db_error($bsQuery));
 		$bsResult = $bsQuery->fetchAll(PDO::FETCH_ASSOC);
-		
-		
+
+
 		// Format the results.
 		foreach ($bsResult as $bsRow) {
 			// Do we need to define the arrays for this URI?
 			if (!isset($boardActivity['active'][$bsRow['stat_uri']])) {
 				// We are operating under the assumption that no arrays exist.
 				// Because of that, we are flat defining their values.
-				
+
 				// Set the last hour count to 0 in case this isn't the row from this hour.
 				$boardActivity['last'][$bsRow['stat_uri']] = 0;
-				
+
 				// If this post was made in the last 24 hours, define 'today' with it.
 				if ($bsRow['stat_hour'] <= $forHour && $bsRow['stat_hour'] >= $yesterHour) {
 					$boardActivity['today'][$bsRow['stat_uri']] = $bsRow['post_count'];
-					
+
 					// If this post was made the last hour, redefine 'last' with it.
 					if ($bsRow['stat_hour'] == $forHour) {
 						$boardActivity['last'][$bsRow['stat_uri']] = $bsRow['post_count'];
@@ -921,7 +921,7 @@ function fetchBoardActivity( array $uris = array(), $forTime = false, $detailed 
 					// First record was not made today, define as zero.
 					$boardActivity['today'][$bsRow['stat_uri']] = 0;
 				}
-				
+
 				// Set the active posters as the unserialized array.
 				$uns = @unserialize($bsRow['author_ip_array']);
 				if (!$uns) continue;
@@ -931,18 +931,18 @@ function fetchBoardActivity( array $uris = array(), $forTime = false, $detailed 
 			}
 			else {
 				// These arrays ARE defined so we ARE going to assume they exist and compound their values.
-				
+
 				// If this row came from today, add its post count to 'today'.
 				if ($bsRow['stat_hour'] <= $forHour && $bsRow['stat_hour'] >= $yesterHour) {
 					$boardActivity['today'][$bsRow['stat_uri']] += $bsRow['post_count'];
-					
+
 					// If this post came from this hour, set it to the post count.
 					// This is an explicit set because we should never get two rows from the same hour.
 					if ($bsRow['stat_hour'] == $forHour) {
 						$boardActivity['last'][$bsRow['stat_uri']] = $bsRow['post_count'];
 					}
 				}
-				
+
 				// Merge our active poster arrays. Unique counting is done below.
 				$uns = @unserialize($bsRow['author_ip_array']);
 				if (!$uns) continue;
@@ -951,7 +951,7 @@ function fetchBoardActivity( array $uris = array(), $forTime = false, $detailed 
 				$boardActivity['average'][$bsRow['stat_uri']] += $bsRow['post_count'];
 			}
 		}
-		
+
 		// Count the unique posters for each board.
 		foreach ($boardActivity['active'] as &$activity) {
 			$activity = count( array_unique( $activity ) );
@@ -967,38 +967,38 @@ function fetchBoardActivity( array $uris = array(), $forTime = false, $detailed 
 		$bsQuery->bindValue(':hour', $forHour, PDO::PARAM_INT);
 		$bsQuery->execute() or error(db_error($bsQuery));
 		$bsResult = $bsQuery->fetchAll(PDO::FETCH_ASSOC);
-		
+
 		$boardActivity = $bsResult[0]['post_count'];
 	}
-	
+
 	return $boardActivity;
 }
 
 function fetchBoardTags( $uris ) {
 	global $config;
-	
+
 	$boardTags = array();
 	$uris = "\"" . implode( (array) $uris, "\",\"" ) . "\"";
-	
+
 	$tagQuery = prepare("SELECT * FROM ``board_tags`` WHERE `uri` IN ({$uris})");
 	$tagQuery->execute() or error(db_error($tagQuery));
 	$tagResult = $tagQuery->fetchAll(PDO::FETCH_ASSOC);
-	
+
 	if ($tagResult) {
 		foreach ($tagResult as $tagRow) {
 			$tag = $tagRow['tag'];
 			$tag = trim($tag);
 			$tag = strtolower($tag);
-			$tag = str_replace(['_', ' '], '-', $tag);
-			
+			$tag = str_replace(array('_', ' '), '-', $tag);
+
 			if (!isset($boardTags[ $tagRow['uri'] ])) {
 				$boardTags[ $tagRow['uri'] ] = array();
 			}
-			
+
 			$boardTags[ $tagRow['uri'] ][] = strtolower( $tag );
 		}
 	}
-	
+
 	return $boardTags;
 }
 
@@ -1045,7 +1045,7 @@ function displayBan($ban) {
 		Bans::seen($ban['id']);
 	}
 	$identity = getIdentity();
-	
+
 	$ban['ip'] = $identity;
 
 	if ($ban['post'] && isset($ban['post']['board'], $ban['post']['id'])) {
@@ -1062,10 +1062,10 @@ function displayBan($ban) {
 			$post = new Thread($ban['post'], null, false, false);
 		}
 	}
-	
+
 	$denied_appeals = array();
 	$pending_appeal = false;
-	
+
 	if ($config['ban_appeals']) {
 		$query = query("SELECT `time`, `denied` FROM ``ban_appeals`` WHERE `ban_id` = " . (int)$ban['id']) or error(db_error());
 		while ($ban_appeal = $query->fetch(PDO::FETCH_ASSOC)) {
@@ -1105,14 +1105,14 @@ function checkBan($board = false) {
 	if (!isset($_SERVER['REMOTE_ADDR'])) {
 		// Server misconfiguration
 		return;
-	}		
+	}
 
 	if (event('check-ban', $board))
 		return true;
 	$identity = getIdentity();
 	$identityrange = getIdentityRange();
 	$bans = Bans::find($identity, $board, $config['show_modname'],false,$identityrange);
-	
+
 	foreach ($bans as &$ban) {
 		if ($ban['expires'] && $ban['expires'] < time()) {
 			Bans::delete($ban['id']);
@@ -1140,9 +1140,9 @@ function checkBan($board = false) {
 		if (time() - $last_time_purged < $config['purge_bans'] )
 			return;
 	}
-	
+
 	//Bans::purge();
-	
+
 	if ($config['cache']['enabled'])
 		cache::set('purged_bans_last', time());
 }
@@ -1200,20 +1200,20 @@ function threadExists($id) {
 function insertFloodPost(array $post) {
 	global $board;
 	$identity = getIdentity();
-	
+
 	$query = prepare("INSERT INTO ``flood`` VALUES (NULL, :ip, :board, :time, :posthash, :filehash, :isreply)");
 	$query->bindValue(':ip', $identity);
 	$query->bindValue(':board', $board['uri']);
 	$query->bindValue(':time', time());
 	$query->bindValue(':posthash', make_comment_hex($post['body_nomarkup']));
-	
+
 	if ($post['has_file']) {
 		$query->bindValue(':filehash', $post['filehash']);
 	}
 	else {
 		$query->bindValue(':filehash', null, PDO::PARAM_NULL);
 	}
-	
+
 	$query->bindValue(':isreply', !$post['op'], PDO::PARAM_INT);
 	$query->execute() or error(db_error($query));
 }
@@ -1228,21 +1228,21 @@ function post(array $post) {
 	} else {
 		$query->bindValue(':subject', null, PDO::PARAM_NULL);
 	}
-	
+
 	if (!empty($post['email'])) {
 		$query->bindValue(':email', $post['email']);
 	} else {
 		$query->bindValue(':email', null, PDO::PARAM_NULL);
 	}
-	
+
 	if (!empty($post['trip'])) {
 		$query->bindValue(':trip', $post['trip']);
 	} else {
 		$query->bindValue(':trip', null, PDO::PARAM_NULL);
 	}
-	
+
 	$identity = getIdentity();
-	
+
 	$query->bindValue(':name', $post['name']);
 	$query->bindValue(':body', $post['body']);
 	$query->bindValue(':body_nomarkup', $post['body_nomarkup']);
@@ -1250,44 +1250,44 @@ function post(array $post) {
 	$query->bindValue(':password', $post['password']);
 	$query->bindValue(':ip', isset($post['ip']) ? $post['ip'] : $identity);
 	$query->bindValue(':range_ip_hash', getIdentityRange());
-	
+
 	if ($post['op'] && $post['mod'] && isset($post['sticky']) && $post['sticky']) {
 		$query->bindValue(':sticky', true, PDO::PARAM_INT);
 	} else {
 		$query->bindValue(':sticky', false, PDO::PARAM_INT);
 	}
-	
+
 	if ($post['op'] && $post['mod'] && isset($post['locked']) && $post['locked']) {
 		$query->bindValue(':locked', true, PDO::PARAM_INT);
 	} else {
 		$query->bindValue(':locked', false, PDO::PARAM_INT);
 	}
-	
+
 	if ($post['op'] && $post['mod'] && isset($post['cycle']) && $post['cycle']) {
 		$query->bindValue(':cycle', true, PDO::PARAM_INT);
 	} else {
 		$query->bindValue(':cycle', false, PDO::PARAM_INT);
 	}
-	
+
 	if ($post['mod'] && isset($post['capcode']) && $post['capcode']) {
 		$query->bindValue(':capcode', $post['capcode'], PDO::PARAM_INT);
 	} else {
 		$query->bindValue(':capcode', null, PDO::PARAM_NULL);
 	}
-	
+
 	if (!empty($post['embed'])) {
 		$query->bindValue(':embed', $post['embed']);
 	} else {
 		$query->bindValue(':embed', null, PDO::PARAM_NULL);
 	}
-	
+
 	if ($post['op']) {
 		// No parent thread, image
 		$query->bindValue(':thread', null, PDO::PARAM_NULL);
 	} else {
 		$query->bindValue(':thread', $post['thread'], PDO::PARAM_INT);
 	}
-	
+
 	if ($post['has_file']) {
 		$query->bindValue(':files', json_encode($post['files']));
 		$query->bindValue(':num_files', $post['num_files']);
@@ -1297,18 +1297,18 @@ function post(array $post) {
 		$query->bindValue(':num_files', 0);
 		$query->bindValue(':filehash', null, PDO::PARAM_NULL);
 	}
-	
+
 	/*Force Anonymous*/
 	if (isset($post['force_anon']) && $post['force_anon']) {
 		$query->bindValue(':force_anon', true, PDO::PARAM_BOOL);
 	} else {
 		$query->bindValue(':force_anon', false, PDO::PARAM_BOOL);
-	}	
+	}
 	if (!$query->execute()) {
 		undoImage($post);
 		error(db_error($query));
 	}
-	
+
 	return $pdo->lastInsertId();
 }
 
@@ -1420,7 +1420,7 @@ function deletePost($id, $error_if_doesnt_exist=true, $rebuild_after=true) {
 	// Delete posts and maybe replies
 	while ($post = $query->fetch(PDO::FETCH_ASSOC)) {
 		event('delete', $post);
-		
+
 		if (!$post['thread']) {
 			// Delete thread HTML page
 			@file_unlink($board['dir'] . $config['dir']['res'] . sprintf($config['file_page'], $post['id']));
@@ -1471,7 +1471,7 @@ function deletePost($id, $error_if_doesnt_exist=true, $rebuild_after=true) {
 	$query = prepare("DELETE FROM ``cites`` WHERE (`target_board` = :board AND (`target` = " . implode(' OR `target` = ', $ids) . ")) OR (`board` = :board AND (`post` = " . implode(' OR `post` = ', $ids) . "))");
 	$query->bindValue(':board', $board['uri']);
 	$query->execute() or error(db_error($query));
-	
+
 	if (isset($rebuild) && $rebuild_after) {
 		buildThread($rebuild);
 		buildIndex();
@@ -1500,7 +1500,7 @@ function clean($pid = false) {
 		$query = prepare(sprintf("SELECT `id` AS `thread_id`, (SELECT COUNT(`id`) FROM ``posts_%s`` WHERE `thread` = `thread_id`) AS `reply_count` FROM ``posts_%s`` WHERE `thread` IS NULL ORDER BY `sticky` DESC, `bump` DESC LIMIT :offset, 9001", $board['uri'], $board['uri']));
 		$query->bindValue(':offset', $offset, PDO::PARAM_INT);
 		$query->execute() or error(db_error($query));
-		
+
 		while ($post = $query->fetch(PDO::FETCH_ASSOC)) {
 			if ($post['reply_count'] < $config['early_404_replies']) {
 				deletePost($post['thread_id'], false, false);
@@ -1539,7 +1539,7 @@ function index($page, $mod=false) {
 		return false;
 
 	$threads = array();
-	
+
 	while ($th = $query->fetch(PDO::FETCH_ASSOC)) {
 		$thread = new Thread($th, $mod ? '?/' : $config['root'], $mod);
 
@@ -1589,7 +1589,7 @@ function index($page, $mod=false) {
 			$thread->omitted = $omitted['post_count'] - ($th['sticky'] ? $config['threads_preview_sticky'] : $config['threads_preview']);
 			$thread->omitted_images = $omitted['image_count'] - $num_images;
 		}
-		
+
 		$threads[] = $thread;
 		$body .= $thread->build(true);
 	}
@@ -1614,16 +1614,16 @@ function updateStatisticsForPost( $post, $new = true ) {
 	$postIp   = isset($post['ip']) ? $post['ip'] : $identity;
 	$postUri  = $post['board'];
 	$postTime = (int)( $post['time'] / 3600 ) * 3600;
-	
+
 	$bsQuery = prepare("SELECT * FROM ``board_stats`` WHERE `stat_uri` = :uri AND `stat_hour` = :hour");
 	$bsQuery->bindValue(':uri', $postUri);
 	$bsQuery->bindValue(':hour', $postTime, PDO::PARAM_INT);
 	$bsQuery->execute() or error(db_error($bsQuery));
 	$bsResult = $bsQuery->fetchAll(PDO::FETCH_ASSOC);
-	
+
 	// Flesh out the new stats row.
 	$boardStats = array();
-	
+
 	// If we already have a row, we're going to be adding this post to it.
 	if (count($bsResult)) {
 		$boardStats = $bsResult[0];
@@ -1631,7 +1631,7 @@ function updateStatisticsForPost( $post, $new = true ) {
 		$boardStats['stat_hour']         = $postTime;
 		$boardStats['post_id_array']     = unserialize( $boardStats['post_id_array'] );
 		$boardStats['author_ip_array']   = unserialize( $boardStats['author_ip_array'] );
-		
+
 		++$boardStats['post_count'];
 		$boardStats['post_id_array'][]   = (int) $post['id'];
 		$boardStats['author_ip_array'][] = less_ip( $postIp );
@@ -1646,25 +1646,25 @@ function updateStatisticsForPost( $post, $new = true ) {
 		$boardStats['author_ip_count']   = 1;
 		$boardStats['author_ip_array']   = array( less_ip( $postIp ) );
 	}
-	
+
 	// Cleanly serialize our array for insertion.
 	$boardStats['post_id_array']   = str_replace( "\"", "\\\"", serialize( $boardStats['post_id_array'] ) );
 	$boardStats['author_ip_array'] = str_replace( "\"", "\\\"", serialize( $boardStats['author_ip_array'] ) );
-	
-	
+
+
 	// Insert this data into our statistics table.
 	$statsInsert = "VALUES(\"{$boardStats['stat_uri']}\", \"{$boardStats['stat_hour']}\", \"{$boardStats['post_count']}\", \"{$boardStats['post_id_array']}\", \"{$boardStats['author_ip_count']}\", \"{$boardStats['author_ip_array']}\" )";
-	
+
 	$postStatQuery = prepare(
 		"REPLACE INTO ``board_stats`` (stat_uri, stat_hour, post_count, post_id_array, author_ip_count, author_ip_array) {$statsInsert}"
 	);
 	$postStatQuery->execute() or error(db_error($postStatQuery));
-	
+
 	// Update the posts_total tracker on the board.
 	if ($new) {
 		query("UPDATE ``boards`` SET `posts_total`=`posts_total`+1 WHERE `uri`=\"{$postUri}\"");
 	}
-	
+
 	return $boardStats;
 }
 
@@ -1815,7 +1815,7 @@ function muteTime() {
 	if ($time = event('mute-time'))
 		return $time;
 	$identity = getIdentity();
-	
+
 	// Find number of mutes in the past X hours
 	$query = prepare("SELECT COUNT(*) FROM ``mutes`` WHERE `time` >= :time AND `ip` = :ip");
 	$query->bindValue(':time', time()-($config['robot_mute_hour']*3600), PDO::PARAM_INT);
@@ -1871,7 +1871,7 @@ function checkMute() {
 			// Not expired yet
 			error(sprintf($config['error']['youaremuted'], $mute['time'] + $mutetime - time()));
 		} else {
-			// Already expired	
+			// Already expired
 			return;
 		}
 	}
@@ -1889,7 +1889,7 @@ function buildIndex($global_api = "yes") {
 		$api = new Api();
 		$catalog = array();
 	}
-	
+
 
 	for ($page = 1; $page <= $config['max_pages']; $page++) {
 		$filename = $board['dir'] . ($page == 1 ? $config['file_index'] : sprintf($config['file_page'], $page));
@@ -1928,7 +1928,7 @@ function buildIndex($global_api = "yes") {
 		$content['antibot'] = $antibot;
 
 		file_write($filename, Element('index.html', $content));
-		
+
 
 	}
 
@@ -1954,7 +1954,7 @@ function buildIndex($global_api = "yes") {
 		$json = json_encode($api->translateCatalog($catalog, true));
 		$jsonFilename = $board['dir'] . 'threads.json';
 		file_write($jsonFilename, $json);
-		
+
 	}
 
 	if ($config['try_smarter'])
@@ -1975,7 +1975,7 @@ function buildJavascript() {
 	}
 
 	if ($config['minify_js']) {
-		require_once 'inc/lib/minify/JSMin.php';		
+		require_once 'inc/lib/minify/JSMin.php';
 		$script = JSMin::minify($script);
 	}
 
@@ -2069,7 +2069,7 @@ function markup_url($matches) {
 		'rel' => 'nofollow',
 		'target' => '_blank',
 	);
-	
+
 	event('markup-url', $link);
 	$link = (array)$link;
 
@@ -2100,7 +2100,7 @@ function unicodify($body) {
 
 function extract_modifiers($body) {
 	$modifiers = array();
-	
+
 	if (preg_match_all('@<tinyboard ([\w\s]+)>(.*?)</tinyboard>@us', $body, $matches, PREG_SET_ORDER)) {
 		foreach ($matches as $match) {
 			if (preg_match('/^escape /', $match[1]))
@@ -2108,7 +2108,7 @@ function extract_modifiers($body) {
 			$modifiers[$match[1]] = html_entity_decode($match[2]);
 		}
 	}
-		
+
 	return $modifiers;
 }
 
@@ -2118,12 +2118,12 @@ function remove_modifiers($body) {
 
 function markup(&$body, $track_cites = false, $op = false) {
 	global $board, $config, $markup_urls;
-	
+
 	$modifiers = extract_modifiers($body);
-	
+
 	$body = preg_replace('@<tinyboard (?!escape )([\w\s]+)>(.+?)</tinyboard>@us', '', $body);
 	$body = preg_replace('@<(tinyboard) escape ([\w\s]+)>@i', '<$1 $2>', $body);
-	
+
 	if (isset($modifiers['raw html']) && $modifiers['raw html'] == '1') {
 		return array();
 	}
@@ -2133,7 +2133,7 @@ function markup(&$body, $track_cites = false, $op = false) {
 
 	if (mysql_version() < 50503)
 		$body = mb_encode_numericentity($body, array(0x010000, 0xffffff, 0, 0xffffff), 'UTF-8');
-	
+
 	foreach ($config['markup'] as $markup) {
 		if (is_string($markup[1])) {
 			$body = preg_replace($markup[0], $markup[1], $body);
@@ -2158,7 +2158,7 @@ function markup(&$body, $track_cites = false, $op = false) {
 		if ($num_links < $config['min_links'] && $op)
 			error(sprintf($config['error']['notenoughlinks'], $config['min_links']));
 	}
-	
+
 	if ($config['markup_repair_tidy'])
 		$body = str_replace('  ', ' &nbsp;', $body);
 
@@ -2182,21 +2182,21 @@ function markup(&$body, $track_cites = false, $op = false) {
 
 		$skip_chars = 0;
 		$body_tmp = $body;
-		
+
 		$search_cites = array();
 		foreach ($cites as $matches) {
 			$search_cites[] = '`id` = ' . $matches[2][0];
 		}
 		$search_cites = array_unique($search_cites);
-		
+
 		$query = query(sprintf('SELECT `thread`, `id` FROM ``posts_%s`` WHERE ' .
 			implode(' OR ', $search_cites), $board['uri'])) or error(db_error());
-		
+
 		$cited_posts = array();
 		while ($cited = $query->fetch(PDO::FETCH_ASSOC)) {
 			$cited_posts[$cited['id']] = $cited['thread'] ? $cited['thread'] : false;
 		}
-				
+
 		foreach ($cites as $matches) {
 			$cite = $matches[2][0];
 
@@ -2229,34 +2229,34 @@ function markup(&$body, $track_cites = false, $op = false) {
 
 		$skip_chars = 0;
 		$body_tmp = $body;
-		
+
 		if (isset($cited_posts)) {
 			// Carry found posts from local board >>X links
 			foreach ($cited_posts as $cite => $thread) {
 				$cited_posts[$cite] = $config['root'] . $board['dir'] . $config['dir']['res'] .
 					($thread ? $thread : $cite) . '.html#' . $cite;
 			}
-			
+
 			$cited_posts = array(
 				$board['uri'] => $cited_posts
 			);
 		} else
 			$cited_posts = array();
-		
+
 		$crossboard_indexes = array();
 		$search_cites_boards = array();
-		
+
 		foreach ($cites as $matches) {
 			$_board = $matches[2][0];
 			$cite = @$matches[3][0];
-			
+
 			if (!isset($search_cites_boards[$_board]))
 				$search_cites_boards[$_board] = array();
 			$search_cites_boards[$_board][] = $cite;
 		}
-		
+
 		$tmp_board = $board['uri'];
-		
+
 		foreach ($search_cites_boards as $_board => $search_cites) {
 			$clauses = array();
 			foreach ($search_cites as $cite) {
@@ -2265,27 +2265,27 @@ function markup(&$body, $track_cites = false, $op = false) {
 				$clauses[] = '`id` = ' . $cite;
 			}
 			$clauses = array_unique($clauses);
-			
+
 			if ($board['uri'] != $_board) {
 				if (!openBoard($_board))
 					continue; // Unknown board
 			}
-			
+
 			if (!empty($clauses)) {
 				$cited_posts[$_board] = array();
-				
+
 				$query = query(sprintf('SELECT `thread`, `id` FROM ``posts_%s`` WHERE ' .
 					implode(' OR ', $clauses), $board['uri'])) or error(db_error());
-				
+
 				while ($cite = $query->fetch(PDO::FETCH_ASSOC)) {
 					$cited_posts[$_board][$cite['id']] = $config['root'] . $board['dir'] . $config['dir']['res'] .
 						($cite['thread'] ? $cite['thread'] : $cite['id']) . '.html#' . $cite['id'];
 				}
 			}
-			
+
 			$crossboard_indexes[$_board] = $config['root'] . $board['dir'] . $config['file_index'];
 		}
-		
+
 		// Restore old board
 		if (!$tmp_board) {
 			unset($GLOBALS['board']);
@@ -2305,7 +2305,7 @@ function markup(&$body, $track_cites = false, $op = false) {
 			if ($cite) {
 				if (isset($cited_posts[$_board][$cite])) {
 					$link = $cited_posts[$_board][$cite];
-					
+
 					$replacement = '<a ' .
 						($_board == $board['uri'] ?
 							'onclick="highlightReply(\''.$cite.'\', event);" '
@@ -2328,27 +2328,27 @@ function markup(&$body, $track_cites = false, $op = false) {
 			}
 		}
 	}
-	
+
 	$tracked_cites = array_unique($tracked_cites, SORT_REGULAR);
-	
+
 	if ($config['strip_superfluous_returns'])
 		$body = preg_replace('/\s+$/', '', $body);
-	
+
 	if ($config['markup_paragraphs']) {
 		$paragraphs = explode("\n", $body);
 		$bodyNew    = "";
 		$tagsOpen   = false;
-		
+
 		// Matches <a>, <a href="" title="">, but not <img/> and returns a
 		$matchOpen  = "#<([A-Z][A-Z0-9]*)+(?:(?:\s+\w+(?:\s*=\s*(?:\".*?\"|'.*?'|[^'\">\s]+))?)+\s*|\s*)>#i";
 		// Matches </a> returns a
 		$matchClose = "#</([A-Z][A-Z0-9]*/?)>#i";
 		$tagsOpened = array();
 		$tagsClosed = array();
-		
+
 		foreach ($paragraphs as $paragraph) {
-			
-			
+
+
 			// Determine if RTL based on content of line.
 			if (strlen(trim($paragraph)) > 0) {
 				$paragraphDirection = is_rtl($paragraph) ? "rtl" : "ltr";
@@ -2356,8 +2356,8 @@ function markup(&$body, $track_cites = false, $op = false) {
 			else {
 				$paragraphDirection = "empty";
 			}
-			
-			
+
+
 			// Add in a quote class for >quotes.
 			if (strpos($paragraph, "&gt;")===0) {
 				$quoteClass = "quote";
@@ -2365,21 +2365,21 @@ function markup(&$body, $track_cites = false, $op = false) {
 			else {
 				$quoteClass = "";
 			}
-			
+
 			// If tags are closed, start a new line.
 			if ($tagsOpen === false) {
 				$bodyNew .= "<p class=\"body-line {$paragraphDirection} {$quoteClass}\">";
 			}
-			
+
 			// If tags are open, add the paragraph to our temporary holder instead.
 			if ($tagsOpen !== false) {
 				$tagsOpen .= $paragraph;
-				
+
 				// Recheck tags to see if we've formed a complete tag with this latest line.
 				if (preg_match_all($matchOpen, $tagsOpen, $tagsOpened) === preg_match_all($matchClose, $tagsOpen, $tagsClosed)) {
 					sort($tagsOpened[1]);
 					sort($tagsClosed[1]);
-					
+
 					// Double-check to make sure these are the same tags.
 					if (count(array_diff_assoc($tagsOpened[1], $tagsClosed[1])) === 0) {
 						// Tags are closed! \o/
@@ -2394,7 +2394,7 @@ function markup(&$body, $track_cites = false, $op = false) {
 			else if (preg_match_all($matchOpen, $paragraph, $tagsOpened) === preg_match_all($matchClose, $paragraph, $tagsClosed)) {
 				sort($tagsOpened[1]);
 				sort($tagsClosed[1]);
-				
+
 				// Double-check to make sure these are the same tags.
 				if (count(array_diff_assoc($tagsOpened[1], $tagsClosed[1])) === 0) {
 					$bodyNew .= $paragraph;
@@ -2404,7 +2404,7 @@ function markup(&$body, $track_cites = false, $op = false) {
 				// Tags are open!
 				$tagsOpen = $paragraph;
 			}
-			
+
 			// If tags are open, do not close it.
 			if (!$tagsOpen) {
 				$bodyNew .= "</p>";
@@ -2413,18 +2413,18 @@ function markup(&$body, $track_cites = false, $op = false) {
 				$tagsOpen .= "<br />";
 			}
 		}
-		
+
 		if ($tagsOpen !== false) {
 			$bodyNew .= $tagsOpen;
 		}
-		
+
 		$body = $bodyNew;
 	}
 	else {
 		$body = preg_replace("/^\s*&gt;.*$/m", '<span class="quote">$0</span>', $body);
 		$body = preg_replace("/\n/", '<br/>', $body);
 	}
-	
+
 	if ($config['markup_repair_tidy']) {
 		$tidy = new tidy();
 		$body = str_replace("\t", '&#09;', $body);
@@ -2442,10 +2442,10 @@ function markup(&$body, $track_cites = false, $op = false) {
 		), 'utf8');
 		$body = str_replace("\n", '', $body);
 	}
-	
+
 	// replace tabs with 8 spaces
 	$body = str_replace("\t", '&#09;', $body);
-		
+
 	return $tracked_cites;
 }
 
@@ -2458,7 +2458,7 @@ function utf8tohtml($utf8) {
 }
 
 function ordutf8($string, &$offset) {
-	$code = ord(substr($string, $offset,1)); 
+	$code = ord(substr($string, $offset,1));
 	if ($code >= 128) { // otherwise 0xxxxxxx
 		if ($code < 224)
 			$bytesnumber = 2; // 110xxxxx
@@ -2491,17 +2491,17 @@ function is_rtl($str) {
 	if(mb_detect_encoding($str) !== 'UTF-8') {
 		$str = mb_convert_encoding($str, mb_detect_encoding($str),'UTF-8');
 	}
-	
+
 	preg_match_all('/[^\n\s]+/', $str, $matches);
 	preg_match_all('/.|\n\s/u', $str, $matches);
 	$chars = $matches[0];
 	$arabic_count = 0;
 	$latin_count = 0;
 	$total_count = 0;
-	
+
 	foreach ($chars as $char) {
 		$pos = uniord($char);
-		
+
 		if ($pos >= 1536 && $pos <= 1791) {
 			$arabic_count++;
 		}
@@ -2510,7 +2510,7 @@ function is_rtl($str) {
 		}
 		$total_count++;
 	}
-	
+
 	return (($arabic_count/$total_count) > 0.5);
 }
 
@@ -2561,7 +2561,7 @@ function buildThread($id, $return = false, $mod = false) {
 	// Check if any posts were found
 	if (!isset($thread))
 		error($config['error']['nonexistant']);
-	
+
 	$hasnoko50 = $thread->postCount() >= $config['noko50_min'];
 	$antibot = $mod || $return ? false : create_antibot($board['uri'], $id);
 
@@ -2664,7 +2664,7 @@ function hcf($a, $b){
 		$b = $a-$b;
 		$a = $a-$b;
 	}
-	if ($b==(round($b/$a))*$a) 
+	if ($b==(round($b/$a))*$a)
 		$gcd=$a;
 	else {
 		for ($i=round($a/2);$i;$i--) {
@@ -2827,11 +2827,11 @@ function DNS($host) {
 
 function shell_exec_error($command, $suppress_stdout = false) {
 	global $config;
-	
+
 	$return = trim(shell_exec('PATH="' . escapeshellcmd($config['shell_path']) . ':$PATH";' .
 		$command . ' 2>&1 ' . ($suppress_stdout ? '> /dev/null ' : '') . '&& echo "TB_SUCCESS"'));
 	$return = preg_replace('/TB_SUCCESS$/', '', $return);
-	
+
 	return $return === 'TB_SUCCESS' ? false : $return;
 }
 
@@ -3012,4 +3012,3 @@ function scan_input($str,$type){
   }
   return $str;
 }
-
