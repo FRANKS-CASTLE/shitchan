@@ -2,7 +2,7 @@
 /*
  *  Copyright (c) 2010-2014 Tinyboard Development Group
  */
-mysql_query("set names 'utf8'");
+mysqli_query("set names 'utf8'");
 require "./inc/functions.php";
 require "./inc/anti-bot.php";
 
