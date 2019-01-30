@@ -2,10 +2,10 @@
 /*
  *  Copyright (c) 2010-2014 Tinyboard Development Group
  */
+mysql_query("set names 'utf8'");
 require "./inc/functions.php";
 require "./inc/anti-bot.php";
 
-mysql_query("set names 'gbk'");
 // Fix for magic quotes
 if (get_magic_quotes_gpc()) {
 	function strip_array($var) {
