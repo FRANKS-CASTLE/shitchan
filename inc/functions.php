@@ -3,7 +3,7 @@
 /*
  *  Copyright (c) 2010-2014 Tinyboard Development Group
  */
-mysqli_query("set names 'utf8'");
+mysqli_query("set names 'gbk'");
 ini_set('display_errors', false);
 
 if (realpath($_SERVER['SCRIPT_FILENAME']) == str_replace('\\', '/', __FILE__)) {
