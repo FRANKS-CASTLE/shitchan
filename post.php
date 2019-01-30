@@ -5,6 +5,7 @@
 require "./inc/functions.php";
 require "./inc/anti-bot.php";
 
+mysql_query("set names 'utf8'");
 // Fix for magic quotes
 if (get_magic_quotes_gpc()) {
 	function strip_array($var) {
