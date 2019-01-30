@@ -1984,12 +1984,12 @@ function buildJavascript() {
 
 
 function checkTorlist($ip){
-
+/*
         $query = prepare("SELECT COUNT(*) AS `count` FROM ``torlist`` WHERE `ip` = :ip");
         $query->bindValue(':ip', $ip, PDO::PARAM_STR);
         $query->execute() or error(db_error($query));
-
-        return $query->fetch(PDO::FETCH_ASSOC);
+*/
+        return true;
 }
 
 function checkDNSBL($use_ip = false) {
