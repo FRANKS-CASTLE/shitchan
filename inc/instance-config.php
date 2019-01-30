@@ -16,14 +16,14 @@
 	$config['db']['password'] = '';
 	$config['timezone'] = 'UTC';
 	$config['cache']['enabled'] = 'apc';
-	
-	
+
+
 	$config['cookies']['mod'] = 'mod';
 	$config['cookies']['salt'] = '';
-	
+
 	$config['spam']['hidden_inputs_max_pass'] = 128;
 	$config['spam']['hidden_inputs_expire'] = 60 * 60 * 4; // three hours
-	
+
 	$config['flood_time'] = 5;
 	$config['flood_time_ip'] = 30;
 	$config['flood_time_same'] = 2;
@@ -41,7 +41,7 @@
 	$config['always_noko'] = true;
 	$config['allow_no_country'] = true;
 	$config['thread_subject_in_title'] = true;
-	$config['spam']['hidden_inputs_max_pass'] = 128;	
+	$config['spam']['hidden_inputs_max_pass'] = 128;
 
 	// Image shit
 	$config['thumb_method'] = 'convert';
@@ -157,32 +157,30 @@
         $config['additional_javascript'][] = 'js/fileboard.js';
 
 	//$config['font_awesome_css'] = '/netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css';
-	
+
 	$config['stylesheets']['Dark'] = 'dark.css';
 	$config['stylesheets']['Photon'] = 'photon.css';
 	$config['stylesheets']['Redchanit'] = 'redchanit.css';
-	
+
 	$config['stylesheets_board'] = true;
 	$config['markup'][] = array("/^[ |\t]*==(.+?)==[ |\t]*$/m", "<span class=\"heading\">\$1</span>");
 	$config['markup'][] = array("/\[spoiler\](.+?)\[\/spoiler\]/", "<span class=\"spoiler\">\$1</span>");
 	$config['markup'][] = array("/~~(.+?)~~/", "<s>\$1</s>");
 	$config['markup'][] = array("/__(.+?)__/", "<u>\$1</u>");
 	$config['markup'][] = array("/###([^\s']+)###/", "<a href='/boards.html#\$1'>###\$1###</a>");
-	
+
 	$config['markup_paragraphs'] = true;
 	$config['markup_rtl'] = true;
-	
-	$config['boards'] = array(array('<i class="fa fa-home" title="Home"></i> home' => 'https://8ch.net', '<i class="fa fa-tags" title="Boards"></i> board list' => 'https://8ch.net/boards.html', '<i class="fa fa-question" title="FAQ"></i> faq' => 'https://8ch.net/faq.html', '<i class="fa fa-random" title="Random"></i> random' => 'https://8ch.net/random.php', '<i class="fa fa-plus" title="New board"></i> create' => 'https://8ch.net/create.php', '<i class="fa fa-ban" title="Public ban list"></i> bans' => 'https://8ch.net/bans.html', '<i class="fa fa-search" title="Search"></i> search' => 'https://8ch.net/search.php', '<i class="fa fa-cog" title="Manage board"></i> manage' => '/mod.php', '<i class="fa fa-quote-right" title="Chat"></i> irc' => 'https://qchat.rizon.net/?channels=#8chan'), array('<i class="fa fa-twitter" title="Twitter"></i>'=>'https://twitter.com/infinitechan', '<i class="fa fa-recycle" title="Claim a board"></i></i>'=>'https://8ch.net/claim.html', '<i class="fa fa-bug" title="File a bug report"></i></i>'=>'https://8ch.net/sudo/catalog.html', '<i class="fa fa-check-circle-o" aria-hidden="true" title="Presolve the captcha!"></i>'=>'https://8ch.net/dnsbls_bypass.php'));
+
+	$config['boards'] = array(array('<i class="fa fa-home" title="Home"></i> home' => 'http://shitchan.com', '<i class="fa fa-random" title="Random"></i> random' => 'http://shitchan.com/random.php', '<i class="fa fa-plus" title="New board"></i> create' => 'https://shitchan.com/create.php', '<i class="fa fa-search" title="Search"></i> search' => 'http://shitchan.com/search.php', '<i class="fa fa-cog" title="Manage board"></i> manage' => '/mod.php'));
 	//$config['boards'] = array(array('<i class="fa fa-home" title="Home"></i>' => '/', '<i class="fa fa-tags" title="Boards"></i>' => '/boards.html', '<i class="fa fa-question" title="FAQ"></i>' => '/faq.html', '<i class="fa fa-random" title="Random"></i>' => '/random.php', '<i class="fa fa-plus" title="New board"></i>' => '/create.php', '<i class="fa fa-search" title="Search"></i>' => '/search.php', '<i class="fa fa-cog" title="Manage board"></i>' => '/mod.php', '<i class="fa fa-quote-right" title="Chat"></i>' => 'https://qchat.rizon.net/?channels=#8chan'), array('b', 'meta', 'int'), array('v', 'a', 'tg', 'fit', 'pol', 'tech', 'mu', 'co', 'sp', 'boards'), array('<i class="fa fa-twitter" title="Twitter"></i>'=>'https://twitter.com/infinitechan', '<i class="fa fa-refresh" title="Claim a board"></i></i>'=>'https://8ch.net/claim.html', '<i class="fa fa-bug" title="File a bug report"></i></i>'=>'https://8ch.net/sudo/catalog.html'));
-	
-	$config['footer'][] = 'All posts on 8chan are the responsibility of the individual poster and not the administration of 8chan, pursuant to 47 U.S.C. &sect; 230.';
-	$config['footer'][] = 'We have not been served any secret court orders and are not under any gag orders.';
-	$config['footer'][] = 'To make a DMCA request or report illegal content, please email <a href="mailto:admin@8chan.co">admin@8chan.co</a>.';
-	
+
+	$config['footer'][] = 'All posts on Shitchan are the responsibility of the individual poster and not the administration of Shitchan.';
+
 	$config['search']['enable'] = true;
-	
+
 	$config['syslog'] = true;
-	
+
 	$config['hour_max_threads'] = 10;
 	$config['filters'][] = array(
 		'condition' => array(
@@ -217,7 +215,7 @@
 		'tw' => "Taiwanese",
 	);
 
-	
+
 $config['gzip_static'] = false;
 $config['hash_masked_ip'] = true;
 $config['force_subject_op'] = false;
@@ -248,6 +246,6 @@ require '8chan-mod-config.php';
 
 // Load instance functions later on
 require_once 'instance-functions.php';
-	
+
 // Load database credentials
 require "secrets.php";
