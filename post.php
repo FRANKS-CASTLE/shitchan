@@ -502,10 +502,10 @@ elseif (isset($_POST['post'])) {
 
 	if (!($post['has_file'] || isset($post['embed'])) || (($post['op'] && $config['force_body_op']) || (!$post['op'] && $config['force_body']))) {
 		// http://stackoverflow.com/a/4167053
-		$stripped_whitespace = preg_replace('/^[\pZ\pC]+|[\pZ\pC]+$/u', '', $post['body']);
+	/*	$stripped_whitespace = preg_replace('/^[\pZ\pC]+|[\pZ\pC]+$/u', '', $post['body']);
 		if ($stripped_whitespace == '') {
 			error($config['error']['tooshort_body']);
-		}
+		} */
 	}
 
 	if ($config['force_subject_op'] && $post['op']) {
