@@ -181,7 +181,7 @@
 
 	$config['syslog'] = true;
 
-	$config['hour_max_threads'] = 10;
+	$config['hour_max_threads'] = 100;
 	$config['filters'][] = array(
 		'condition' => array(
 			'custom' => 'max_posts_per_hour'
