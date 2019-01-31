@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS `boards` (
 CREATE TABLE IF NOT EXISTS `board_create` (
   `time` text NOT NULL,
   `uri` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -251,7 +251,7 @@ CREATE TABLE IF NOT EXISTS `search_queries` (
   `ip` varchar(39) NOT NULL,
   `time` int(11) NOT NULL,
   `query` text NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -345,7 +345,7 @@ CREATE TABLE IF NOT EXISTS `tor_cookies` (
   `created` datetime NOT NULL,
   `uses` tinyint(3) unsigned DEFAULT '0',
   PRIMARY KEY (`cookie`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -357,7 +357,7 @@ CREATE TABLE IF NOT EXISTS `dnsbl_bypass` (
   `ip` varchar(255) NOT NULL,
   `created` datetime DEFAULT NULL,
   PRIMARY KEY (`ip`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -372,7 +372,7 @@ CREATE TABLE IF NOT EXISTS `filters` (
   `value` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `data` (`type`,`value`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -389,7 +389,7 @@ CREATE TABLE IF NOT EXISTS `pages` (
   `content` text,
   PRIMARY KEY (`id`),
   UNIQUE KEY `u_pages` (`name`,`board`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -405,7 +405,7 @@ CREATE TABLE IF NOT EXISTS `board_stats` (
 	`author_ip_count` INT(11) UNSIGNED NULL,
 	`author_ip_array` TEXT NULL,
 	PRIMARY KEY (`stat_uri`, `stat_hour`)
-)  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+)  ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
 
