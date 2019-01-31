@@ -345,7 +345,7 @@ CREATE TABLE IF NOT EXISTS `tor_cookies` (
   `created` datetime NOT NULL,
   `uses` tinyint(3) unsigned DEFAULT '0',
   PRIMARY KEY (`cookie`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
