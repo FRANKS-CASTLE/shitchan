@@ -710,9 +710,9 @@ elseif (isset($_POST['post'])) {
 		$post['body'] .= "\n<tinyboard tag>" . $_POST['tag'] . "</tinyboard>";
 	}
 
-	if (mysql_version() >= 50503) {
-		$post['body_nomarkup'] = remove_modifiers($post['body_nomarkup']);		
+	if (mysql_version() >= 50503) {			
 		$post['body_nomarkup'] = utf8tohtml($post['body']); // Assume we're using the utf8mb4 charset
+		$post['body_nomarkup'] = remove_modifiers($post['body_nomarkup']);
 	}
 	else {
 		// MySQL's `utf8` charset only supports up to 3-byte symbols
