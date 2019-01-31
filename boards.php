@@ -1,6 +1,7 @@
 <?php
 
 include "inc/functions.php";
+require 'inc/mod/pages.php';
 
 $admin         = isset($mod["type"]) && $mod["type"]<=30;
 $founding_date = "October 23, 2013";
