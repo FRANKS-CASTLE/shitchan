@@ -2,10 +2,8 @@
 /*
  *  Copyright (c) 2010-2014 Tinyboard Development Group
  */
-mysqli_query("set names 'utf8'");
 require "./inc/functions.php";
 require "./inc/anti-bot.php";
-
 // Fix for magic quotes
 if (get_magic_quotes_gpc()) {
 	function strip_array($var) {
@@ -15,7 +13,6 @@ if (get_magic_quotes_gpc()) {
 	$_GET = strip_array($_GET);
 	$_POST = strip_array($_POST);
 }
-
 if (isset($_POST['delete'])) {
 	// Delete
 
@@ -42,7 +39,6 @@ if (isset($_POST['delete'])) {
 
 	// Check if banned
 	checkBan($board['uri']);
-
 	// Check if deletion enabled
 	if (!$config['allow_delete'])
 		error(_('Users are not allowed to delete their own posts on this board.'));
@@ -61,10 +57,8 @@ if (isset($_POST['delete'])) {
 				$thread_query = prepare(sprintf("SELECT `time`,`password` FROM ``posts_%s`` WHERE `id` = :id", $board['uri']));
 				$thread_query->bindValue(':id', $post['thread'], PDO::PARAM_INT);
 				$thread_query->execute() or error(db_error($query));
-
 				$thread = $thread_query->fetch(PDO::FETCH_ASSOC);
 			}
-
 			if ($password != '' && $post['password'] != $password && (!$thread || $thread['password'] != $password))
 				error($config['error']['invalidpassword']);
 
@@ -89,23 +83,18 @@ if (isset($_POST['delete'])) {
 	}
 
 	buildIndex();
-
 	$is_mod = isset($_POST['mod']) && $_POST['mod'];
 	$root = $is_mod ? $config['root'] . $config['file_mod'] . '?/' : $config['root'];
-
 	if (!isset($_POST['json_response'])) {
 		header('Location: ' . $root . $board['dir'] . $config['file_index'], true, $config['redirect_http']);
 	} else {
 		header('Content-Type: text/json');
 		echo json_encode(array('success' => true));
 	}
-
         // We are already done, let's continue our heavy-lifting work in the background (if we run off FastCGI)
         if (function_exists('fastcgi_finish_request'))
                 @fastcgi_finish_request();
-
 	rebuildThemes('post-delete', $board['uri']);
-
 } elseif (isset($_POST['report'])) {
 	if (!isset($_POST['board'], $_POST['reason']))
 		error($config['error']['bot']);
@@ -134,11 +123,9 @@ if (isset($_POST['delete'])) {
 
 	if (count($report) > $config['report_limit'])
 		error($config['error']['toomanyreports']);
-
 	if ($config['report_captcha'] && !isset($_POST['captcha_text'], $_POST['captcha_cookie'])) {
 		error($config['error']['bot']);
 	}
-
 	if ($config['report_captcha']) {
 		$resp = file_get_contents($config['captcha']['provider_check'] . "?" . http_build_query([
 			'mode' => 'check',
@@ -146,7 +133,6 @@ if (isset($_POST['delete'])) {
 			'extra' => $config['captcha']['extra'],
 			'cookie' => $_POST['captcha_cookie']
 		]));
-
 		if ($resp !== '1') {
 			$error = $config['error']['captcha'];
 		}
@@ -158,7 +144,6 @@ if (isset($_POST['delete'])) {
 		} else {
 			$captcha = null;
 		}
-
 		$body = Element('report.html', array('board' => $board, 'config' => $config, 'error' => $error, 'reason_prefill' => $_POST['reason'], 'post' => 'delete_'.$report[0], 'captcha' => $captcha, 'global' => isset($_POST['global'])));
 		echo Element('page.html', ['config' => $config, 'body' => $body]);
 		die();
@@ -236,7 +221,6 @@ elseif (isset($_POST['post'])) {
 	if (!openBoard($post['board']))
 		error($config['error']['noboard']);
 
-
 	if (!isset($_POST['name']))
 		$_POST['name'] = $config['anonymous'];
 
@@ -254,16 +238,13 @@ elseif (isset($_POST['post'])) {
 		$post['thread'] = round($_POST['thread']);
 	} else
 		$post['op'] = true;
-
 	// The dnsbls is an optional DNS blacklist include.
 	// Squelch warnings if it doesn't exist.
 	if (!$config['captcha']['enabled'] && !($post['op'] && $config['new_thread_capt'])) {
 		@include "./inc/dnsbls.php";
 	}
-
 	// Check if banned
 	checkBan($board['uri']);
-
 	// Check for CAPTCHA right after opening the board so the "return" link is in there
 	//if ($config['captcha']['enabled']) {
 	//New thread captcha
@@ -274,13 +255,11 @@ elseif (isset($_POST['post'])) {
 			'extra' => $config['captcha']['extra'],
 			'cookie' => $_POST['captcha_cookie']
 		]));
-
 		if ($resp !== '1') {
                         error($config['error']['captcha'] .
 			'<script>if (actually_load_captcha !== undefined) actually_load_captcha("'.$config['captcha']['provider_get'].'", "'.$config['captcha']['extra'].'");</script>');
 		}
 	}
-
 	//if (!(($post['op'] && $_POST['post'] == $config['button_newtopic']) ||
 		//(!$post['op'] && $_POST['post'] == $config['button_reply'])))
 		//error($config['error']['bot']);
@@ -290,7 +269,6 @@ elseif (isset($_POST['post'])) {
 		(!isset($_SERVER['HTTP_REFERER']) || !preg_match($config['referer_match'], rawurldecode($_SERVER['HTTP_REFERER'])))) {
 		error($config['error']['referer']);
 	}
-
 	if ($post['mod'] = isset($_POST['mod']) && $_POST['mod']) {
 		check_login(false);
 		if (!$mod) {
@@ -326,7 +304,6 @@ elseif (isset($_POST['post'])) {
                         $post['force_anon'] = true;
                 } else{
                         $post['force_anon'] = false;
-
                         if (isset($_POST['thread'])) {
                                 //Check if force_anon is enable or 1, then forced anonymous, to avoid field form injection.
                                 $query = prepare(sprintf("SELECT `force_anon` FROM ``posts_%s`` WHERE `id` = :id", $board['uri']));
@@ -338,7 +315,6 @@ elseif (isset($_POST['post'])) {
                                         }
                                 }
                         }
-
                 }
         }
 
@@ -371,7 +347,6 @@ elseif (isset($_POST['post'])) {
 		if (!isset($post['embed'])) {
 			error($config['error']['invalid_embed']);
 		}
-
 		if ($config['image_reject_repost']) {
 			if ($p = getPostByEmbed($post['embed'])) {
 				error(sprintf($config['error']['fileexists'],
@@ -405,7 +380,6 @@ elseif (isset($_POST['post'])) {
 
 		if ($config['field_disable_email'])
 			$_POST['email'] = '';
-
 		if ($config['field_email_selectbox'] && $_POST['email'] != 'sage')
 			$_POST['email'] = '';
 
@@ -425,16 +399,13 @@ elseif (isset($_POST['post'])) {
 			$url_without_params = mb_substr($post['file_url'], 0, mb_strpos($post['file_url'], '?'));
 		else
 			$url_without_params = $post['file_url'];
-
 		$post['extension'] = strtolower(mb_substr($url_without_params, mb_strrpos($url_without_params, '.') + 1));
-
 		if ($post['op'] && $config['allowed_ext_op']) {
 			if (!in_array($post['extension'], $config['allowed_ext_op']))
 				error($config['error']['unknownext']);
 		}
 		else if (!in_array($post['extension'], $config['allowed_ext']) && !in_array($post['extension'], $config['allowed_ext_files']))
 			error($config['error']['unknownext']);
-
 		$post['file_tmp'] = tempnam($config['tmp'], 'url');
 		function unlink_tmp_file($file) {
 			@unlink($file);
@@ -461,7 +432,6 @@ elseif (isset($_POST['post'])) {
 		curl_close($curl);
 
 		fclose($fp);
-
 		$_FILES['file'] = array(
 			'name' => basename($url_without_params),
 			'tmp_name' => $post['file_tmp'],
@@ -474,7 +444,6 @@ elseif (isset($_POST['post'])) {
 	$post['name'] = $_POST['name'] != '' ? $_POST['name'] : $config['anonymous'];
 	$post['subject'] = $_POST['subject'];
 	$post['email'] = str_replace(' ', '%20', htmlspecialchars($_POST['email']));
-
 	if (isset($_POST['no-bump'])) {
 		if (!empty($post['email'])) {
 			$post['email'] .= '+sage';
@@ -483,10 +452,9 @@ elseif (isset($_POST['post'])) {
 		}
 	}
 
-	$post['body'] = utf8tohtml($_POST['body']);
+	$post['body'] = $_POST['body'];
 	$post['password'] = $_POST['password'];
 	$post['has_file'] = (!isset($post['embed']) && (($post['op'] && !isset($post['no_longer_require_an_image_for_op']) && $config['force_image_op']) || !empty($_FILES['file']['name'])));
-
 	// Handle our Tor users
 	$tor = checkDNSBL();
 	if ($tor && !(isset($_SERVER['HTTP_X_TOR'], $_SERVER['REMOTE_ADDR']) && $_SERVER['REMOTE_ADDR'] == '127.0.0.2' && $_SERVER['HTTP_X_TOR'] = 'true'))
@@ -495,19 +463,17 @@ elseif (isset($_POST['post'])) {
 		error('Sorry. Tor users can\'t upload files on this board.');
 	if ($tor && !$config['tor_posting'])
 		error('Sorry. The owner of this board has decided not to allow Tor posters for some reason...');
-
 	if ($post['has_file'] && $config['disable_images']) {
 		error($config['error']['images_disabled']);
 	}
 
 	if (!($post['has_file'] || isset($post['embed'])) || (($post['op'] && $config['force_body_op']) || (!$post['op'] && $config['force_body']))) {
 		// http://stackoverflow.com/a/4167053
-		$stripped_whitespace = preg_replace('/^[\pZ\pC]+|[\pZ\pC]+$/u', '',  utf8tohtml($post['body']));
+		$stripped_whitespace = preg_replace('/^[\pZ\pC]+|[\pZ\pC]+$/u', '', $post['body']);
 		if ($stripped_whitespace == '') {
 			error($config['error']['tooshort_body']);
 		}
 	}
-
 	if ($config['force_subject_op'] && $post['op']) {
 		$stripped_whitespace = preg_replace('/^[\pZ\pC]+|[\pZ\pC]+$/u', '', $post['subject']);
 		if ($stripped_whitespace == '') {
@@ -546,7 +512,6 @@ elseif (isset($_POST['post'])) {
 		} else {
 			error(_('Unrecognized file size determination method.'));
 		}
-
 		if ($size > $config['max_filesize'])
 			error(sprintf3($config['error']['filesize'], array(
 				'sz' => number_format($size),
@@ -598,36 +563,29 @@ elseif (isset($_POST['post'])) {
 					$file['file_id'] = $config['filename_func']($file);
 				else
 					$file['file_id'] = time() . substr(microtime(), 2, 3);
-
 				if (sizeof($_FILES) > 1)
 					$file['file_id'] .= "-$i";
 
 				$file['file'] = $config['dir']['img_root'] . $board['dir'] . $config['dir']['img'] . $file['file_id'] . '.' . $file['extension'];
-
 				while (file_exists ($file['file'])) {
 					$file['file_id'] .= rand(0,9);
 					$file['file'] = $config['dir']['img_root'] . $board['dir'] . $config['dir']['img'] . $file['file_id'] . '.' . $file['extension'];
 				}
-
 				$file['thumb'] = $config['dir']['img_root'] . $board['dir'] . $config['dir']['thumb'] . $file['file_id'] . '.' . ($config['thumb_ext'] ? $config['thumb_ext'] : $file['extension']);
 				$post['files'][] = $file;
 				$i++;
 			}
 		}
 	}
-
 	if (empty($post['files'])) $post['has_file'] = false;
-
 	// Check for a file
 	if ($post['op'] && !isset($post['no_longer_require_an_image_for_op'])) {
 		if (!$post['has_file'] && $config['force_image_op'])
 			error($config['error']['noimage']);
 	}
-
 	// Check for too many files
 	if (sizeof($post['files']) > $config['max_images'])
 		error($config['error']['toomanyimages']);
-
 	if ($config['strip_combining_chars']) {
 		$post['name'] = strip_combining_chars($post['name']);
 		$post['email'] = strip_combining_chars($post['email']);
@@ -650,7 +608,6 @@ elseif (isset($_POST['post'])) {
 		error(sprintf($config['error']['toolong'], 'password'));
 
 	wordfilters($post['body']);
-
 	if ($config['max_newlines'] > 0) {
 		preg_match_all("/\n/", $post['body'], $nlmatches);
 
@@ -685,7 +642,6 @@ elseif (isset($_POST['post'])) {
 		$country_name = geoip\geoip_country_name_by_addr_v6($gi, ipv4to6($_SERVER['REMOTE_ADDR']));
 		if (!$country_code) $country_code = 'A1';
 		if (!$country_name) $country_name = 'Unknown';
-
 		$post['body'] .= "\n<tinyboard flag>".strtolower($country_code)."</tinyboard>".
 		"\n<tinyboard flag alt>$country_name</tinyboard>";
 	}
@@ -696,23 +652,18 @@ elseif (isset($_POST['post'])) {
 
 			if (!isset($config['user_flags'][$user_flag]))
 				error(_('Invalid flag selection!'));
-
 			$flag_alt = isset($user_flag_alt) ? $user_flag_alt : $config['user_flags'][$user_flag];
-
 			$post['body'] .= "\n<tinyboard flag>" . strtolower($user_flag) . "</tinyboard>" .
 			"\n<tinyboard flag alt>" . $flag_alt . "</tinyboard>";
 		} else if ($config['force_flag']) {
 			error(_('You must choose a flag to post on this board!'));
 		}
 	}
-
 	if ($config['allowed_tags'] && $post['op'] && isset($_POST['tag']) && $_POST['tag'] && isset($config['allowed_tags'][$_POST['tag']])) {
 		$post['body'] .= "\n<tinyboard tag>" . $_POST['tag'] . "</tinyboard>";
 	}
-
-	if (mysql_version() >= 50503) {			
-		$post['body_nomarkup'] = utf8tohtml($post['body']); // Assume we're using the utf8mb4 charset
-		$post['body_nomarkup'] = remove_modifiers($post['body_nomarkup']);
+	if (mysql_version() >= 50503) {
+		$post['body_nomarkup'] = $post['body']; // Assume we're using the utf8mb4 charset
 	}
 	else {
 		// MySQL's `utf8` charset only supports up to 3-byte symbols
@@ -732,10 +683,8 @@ elseif (isset($_POST['post'])) {
 	$post['tracked_cites'] = markup($post['body'], true, $post['op']);
 
 
-
 	if ($post['has_file']) {
 		$allhashes = '';
-
 		foreach ($post['files'] as $key => &$file) {
 			if ($post['op'] && $config['allowed_ext_op']) {
 				if (!in_array($file['extension'], $config['allowed_ext_op']))
@@ -753,7 +702,6 @@ elseif (isset($_POST['post'])) {
 
 			if (!is_readable($upload))
 				error($config['error']['nomove']);
-
 			$md5cmd = $config['bsd_md5'] ? 'md5 -r' : 'md5sum';
 			if( ($output = shell_exec_error("cat " . escapeshellarg($upload) . " | $md5cmd")) !== false ) {
 				$explodedvar = explode(' ', $output);
@@ -761,7 +709,6 @@ elseif (isset($_POST['post'])) {
 			} else {
 				$hash = md5_file($upload);
 			}
-
 			// filter files by MD5
 			$query = prepare('SELECT * FROM ``filters`` WHERE `type` = "md5" and `value` = :value');
 			$query->bindValue(':value', $hash);
@@ -770,7 +717,6 @@ elseif (isset($_POST['post'])) {
 				$reason = utf8tohtml($row['reason']);
 				error("Sorry, cannot upload. Matched MD5 of disallowed file. Reason: {$reason}");
 			}
-
 			$file['hash'] = $hash;
 			$allhashes .= $hash;
 		}
@@ -904,7 +850,6 @@ elseif (isset($_POST['post'])) {
 			// not an image
 			//copy($config['file_thumb'], $post['thumb']);
 			$file['thumb'] = 'file';
-
 			$size = @getimagesize(sprintf($config['file_thumb'],
 				isset($config['file_icons'][$file['extension']]) ?
 					$config['file_icons'][$file['extension']] : $config['file_icons']['default']));
@@ -921,7 +866,6 @@ elseif (isset($_POST['post'])) {
 				error($config['error']['nomove']);
 			}
 		}
-
 		if ($config['image_reject_repost']) {
 			if ($p = getPostByHash($post['filehash'])) {
 				undoImage($post);
@@ -975,13 +919,11 @@ elseif (isset($_POST['post'])) {
 	$post->files = array_map(function($a) { return (object)$a; }, $post->files);
 	$error = event('post', $post);
 	$post->files = array_map(function($a) { return (array)$a; }, $post->files);
-
 	if ($error) {
 		undoImage((array)$post);
 		error($error);
 	}
 	$post = (array)$post;
-
 	if ($post['files'])
 		$post['files'] = $post['files'];
 	$post['num_files'] = sizeof($post['files']);
@@ -1002,7 +944,6 @@ elseif (isset($_POST['post'])) {
 		$query->bindValue(':thread', $post['thread']);
 		$query->bindValue(':limit', $config['cycle_limit'], PDO::PARAM_INT);
 		$query->execute() or error(db_error($query));
-
 		while ($dpost = $query->fetch()) {
 			deletePost($dpost['id'], false, false);
 		}
@@ -1051,7 +992,6 @@ elseif (isset($_POST['post'])) {
 				'page50' => str_replace('%d', '(\d+)', preg_quote($config['file_page50'], '/')),
 				'res' => preg_quote($config['dir']['res'], '/'),
 			);
-
 			if (preg_match('/\/' . $regex['board'] . $regex['res'] . $regex['page50'] . '([?&].*)?$/', $_SERVER['HTTP_REFERER'])) {
 				$redirect = $root . $board['dir'] . $config['dir']['res'] .
 					sprintf($config['file_page50'], $post['op'] ? $id:$post['thread']) . (!$post['op'] ? '#' . $id : '');
@@ -1061,7 +1001,6 @@ elseif (isset($_POST['post'])) {
 		$redirect = $root . $board['dir'] . $config['file_index'];
 
 	}
-
 	buildThread($post['op'] ? $id : $post['thread']);
 
 	if ($config['syslog'])
@@ -1069,7 +1008,6 @@ elseif (isset($_POST['post'])) {
 			sprintf($config['file_page'], $post['op'] ? $id : $post['thread']) . (!$post['op'] ? '#' . $id : ''));
 
 	if (!$post['mod']) header('X-Associated-Content: "' . $redirect . '"');
-
 	if (!isset($_POST['json_response'])) {
 		header('Location: ' . $redirect, true, $config['redirect_http']);
 	} else {
@@ -1093,7 +1031,6 @@ elseif (isset($_POST['post'])) {
 	if (function_exists('fastcgi_finish_request')) {
 		@fastcgi_finish_request();
 	}
-
 	buildIndex();
 
 	if ($post['op']) {
